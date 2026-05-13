@@ -1,0 +1,14 @@
+{
+  "name": "blugrey-slider",
+  "version": "1.0.0",
+  "description": "Yahoo Shopping API slider for Blugrey store",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node netlify/functions/slider.js",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": ["yahoo", "shopping", "api", "slider"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+}
