@@ -54,6 +54,7 @@
     }
 
     window.handleSliderResponse = function(data) {
+      console.log('API Response:', data);
       const slider = document.getElementById('slider');
       
       if (data.error || !data.hits || data.hits.length === 0) {
@@ -84,8 +85,10 @@
     };
 
     function loadProducts() {
+      console.log('Loading products...');
       const script = document.createElement('script');
       script.src = `${API_URL}?query=${encodeURIComponent(QUERY)}&results=${RESULTS}&callback=handleSliderResponse`;
+      script.onerror = () => console.error('Script load error');
       document.head.appendChild(script);
     }
 
