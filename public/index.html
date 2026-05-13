@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新着商品スライダー - BLUGREY</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    #wrapper { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    #title { font-size: 20px; color: #FF0033; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #FF0033; display: flex; align-items: center; gap: 8px; }
+    #slider { display: flex; gap: 12px; overflow-x: auto; padding: 12px 0; scroll-behavior: smooth; scrollbar-width: none; }
+    #slider::-webkit-scrollbar { display: none; }
+    .card { flex: 0 0 140px; background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: all .2s; cursor: pointer; }
+    .card:hover { box-shadow: 0 4px 12px rgba(255,0,51,.2); border-color: #FF0033; transform: translateY(-2px); }
+    .img { width: 100%; height: 120px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
+    .img img { width: 100%; height: 100%; object-fit: cover; }
+    .info { padding: 8px; flex: 1; display: flex; flex-direction: column; }
+    .name { font-size: 11px; color: #333; line-height: 1.3; margin-bottom: 4px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .price { font-size: 14px; font-weight: bold; color: #E00; margin-bottom: 3px; }
+    .rating { font-size: 10px; color: #999; }
+    .controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+    .btn { background: #FF0033; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: background .2s; }
+    .btn:hover { background: #cc0029; }
+    .loading { text-align: center; padding: 40px 20px; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="wrapper">
+      <div id="title">✨ 新着商品</div>
+      <div id="slider">
+        <div class="loading">読み込み中...</div>
+      </div>
+      <div class="controls">
+        <button class="btn" onclick="scrollLeft()">← 前へ</button>
+        <button class="btn" onclick="scrollRight()">次へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = '/.netlify/functions/slider';
+    const QUERY = 'モデルカー';
+    const RESULTS = 12;
+
+    function scrollLeft() {
+      document.getElementById('slider').scrollBy({left: -300, behavior: 'smooth'});
+    }
+
+    function scrollRight() {
+      document.getElementById('slider').scrollBy({left: 300, behavior: 'smooth'});
+    }
+
+    window.handleSliderResponse = function(data) {
+      const slider = document.getElementById('slider');
+      
+      if (data.error || !data.hits || data.hits.length === 0) {
+        slider.innerHTML = '<div class="loading">商品が見つかりません</div>';
+        return;
+      }
+
+      let html = '';
+      data.hits.forEach(p => {
+        const price = p.price ? Math.floor(p.price).toLocaleString('ja-JP') : '価格未定';
+        const rating = (p.review && p.review.reviewCount > 0) 
+          ? '★' + p.review.rate.toFixed(1) + ' (' + p.review.reviewCount + ')' 
+          : '評価なし';
+        const img = p.imageUrl || '';
+        const url = p.url || '#';
+        
+        html += `<a href="${url}" target="_blank" class="card" title="${p.name}">
+          <div class="img">${img ? `<img src="${img}" alt="${p.name}">` : '🚗'}</div>
+          <div class="info">
+            <div class="name">${p.name}</div>
+            <div class="price">¥${price}</div>
+            <div class="rating">${rating}</div>
+          </div>
+        </a>`;
+      });
+      
+      slider.innerHTML = html;
+    };
+
+    function loadProducts() {
+      const script = document.createElement('script');
+      script.src = `${API_URL}?query=${encodeURIComponent(QUERY)}&results=${RESULTS}&callback=handleSliderResponse`;
+      document.head.appendChild(script);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProducts);
+    setInterval(loadProducts, 300000); // 5分ごとに更新
+  </script>
+</body>
+</html>
