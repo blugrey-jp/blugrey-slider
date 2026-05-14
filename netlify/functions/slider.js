@@ -6,7 +6,7 @@ exports.handler = async (event) => {
     const results = event.queryStringParameters?.results || '12';
     const callback = event.queryStringParameters?.callback || 'callback';
     
-    const CLIENT_ID = 'JKBxlhvhgm';
+    const CLIENT_ID = 'xznggzuAgH';
     
     const apiUrl = `https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch?appid=${CLIENT_ID}&query=${encodeURIComponent(query)}&hits=${results}&affiliate_type=ycpromotion`;
     
