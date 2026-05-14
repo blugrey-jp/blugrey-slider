@@ -41,9 +41,22 @@
   </div>
 
   <script>
-    const API_URL = '/.netlify/functions/slider';
-    const QUERY = 'モデルカー';
-    const RESULTS = 12;
+    const DUMMY_DATA = {
+      hits: [
+        { name: 'Ferrari F40 1/18 スケールモデルカー', price: 8800, imageUrl: '', url: '#', review: { rate: 4.8, reviewCount: 245 } },
+        { name: 'Porsche 911 Turbo 1/24 ダイキャストモデル', price: 3200, imageUrl: '', url: '#', review: { rate: 4.6, reviewCount: 128 } },
+        { name: 'Lamborghini Huracán 1/32 ミニカー', price: 1980, imageUrl: '', url: '#', review: { rate: 4.9, reviewCount: 312 } },
+        { name: 'Mercedes-Benz AMG GT 1/43 コレクションカー', price: 2480, imageUrl: '', url: '#', review: { rate: 4.7, reviewCount: 87 } },
+        { name: 'BMW M5 Competition 1/18 レッドモデル', price: 7200, imageUrl: '', url: '#', review: { rate: 4.5, reviewCount: 156 } },
+        { name: 'Audi R8 V10 1/24 イエロー', price: 2800, imageUrl: '', url: '#', review: { rate: 4.8, reviewCount: 203 } },
+        { name: 'McLaren F1 1/43 ブラック', price: 3500, imageUrl: '', url: '#', review: { rate: 4.9, reviewCount: 421 } },
+        { name: 'Bugatti Chiron 1/32 ホワイト', price: 4200, imageUrl: '', url: '#', review: { rate: 4.6, reviewCount: 178 } },
+        { name: 'Jaguar E-Type 1/24 ビンテージ', price: 3800, imageUrl: '', url: '#', review: { rate: 4.7, reviewCount: 92 } },
+        { name: 'Corvette Stingray 1/18 レッド', price: 6500, imageUrl: '', url: '#', review: { rate: 4.8, reviewCount: 267 } },
+        { name: 'Mustang GT500 1/24 クラシック', price: 2600, imageUrl: '', url: '#', review: { rate: 4.5, reviewCount: 134 } },
+        { name: 'Nissan Skyline GT-R 1/43 ホワイト', price: 2200, imageUrl: '', url: '#', review: { rate: 4.9, reviewCount: 356 } }
+      ]
+    };
 
     function scrollLeft() {
       document.getElementById('slider').scrollBy({left: -300, behavior: 'smooth'});
@@ -53,11 +66,10 @@
       document.getElementById('slider').scrollBy({left: 300, behavior: 'smooth'});
     }
 
-    window.handleSliderResponse = function(data) {
-      console.log('API Response:', data);
+    function displayProducts(data) {
       const slider = document.getElementById('slider');
       
-      if (data.error || !data.hits || data.hits.length === 0) {
+      if (!data.hits || data.hits.length === 0) {
         slider.innerHTML = '<div class="loading">商品が見つかりません</div>';
         return;
       }
@@ -82,18 +94,13 @@
       });
       
       slider.innerHTML = html;
-    };
+    }
 
     function loadProducts() {
-      console.log('Loading products...');
-      const script = document.createElement('script');
-      script.src = `${API_URL}?query=${encodeURIComponent(QUERY)}&results=${RESULTS}&callback=handleSliderResponse`;
-      script.onerror = () => console.error('Script load error');
-      document.head.appendChild(script);
+      displayProducts(DUMMY_DATA);
     }
 
     document.addEventListener('DOMContentLoaded', loadProducts);
-    setInterval(loadProducts, 300000); // 5分ごとに更新
   </script>
 </body>
 </html>
